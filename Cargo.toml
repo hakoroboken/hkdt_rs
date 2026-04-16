@@ -5,3 +5,5 @@ edition = "2024"
 
 [dependencies]
 colored = "2.1.0"
+termion = "1.5"
+serialport = "4.2.0"
