@@ -1,4 +1,5 @@
 use serialport;
+use termion::input::TermRead;
 
 use crate::log_err;
 
@@ -10,7 +11,7 @@ pub struct Serial
 impl Serial {
     pub fn new(port_name : &str, baud_rate: u32)->Option<Self>
     {
-        match serialport::new(port_name, baud_rate).open() {
+        match serialport::new(port_name, baud_rate).timeout(std::time::Duration::from_millis(1000)).open() {
             Ok(port) => Some(Self { port }),
             Err(e) => {
                 log_err!("Failed to open serial port {}: {}", port_name, e);
@@ -38,6 +39,19 @@ impl Serial {
                 log_err!("Failed to read from serial port: {}", e);
                 None
             }
+        }
+    }
+
+    pub fn read_str(&mut self)->Option<String>
+    {
+        match self.port.read_line() {
+            Ok(line) =>{
+                line
+            },
+            Err(_e) =>{
+                // log_err!("Failed to read from serial port: {}", e)
+                None
+            },
         }
     }
 }
