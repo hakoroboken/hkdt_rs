@@ -1,11 +1,8 @@
 // このExampleはArmBotのセンサーデータをシリアル通信を介して取得します。
 
-// シリアル通信用ライブラリ
-use hkdt_rs::connection::serial::Serial;
-// ArmBotを処理するためのライブラリ
-use hkdt_rs::arm_bot::ArmBot;
-// デバッグ出力用のマクロ
-use hkdt_rs::{log_err, log_info};
+use hkdt_rs::arm_bot::ArmBot; // ArmBotを処理するためのライブラリ
+use hkdt_rs::connection::serial::Serial; // シリアル通信用ライブラリ
+use hkdt_rs::{log_err, log_info}; // デバッグ出力用のマクロ
 
 fn main() {
     // シリアルポートを開く。デバイス名とボーレートは環境に合わせて変更してください。
