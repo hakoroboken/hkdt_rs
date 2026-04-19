@@ -10,7 +10,7 @@ use hkdt_rs::{log_info, log_err};
 fn main()
 {
     // シリアルポートを開く。デバイス名とボーレートは環境に合わせて変更してください。
-    let mut serial = Serial::new("/dev/ttyACM0", 115200).unwrap();
+    let mut serial = Serial::new("ArmBot_Serial", "/dev/ttyACM0", 115200).unwrap();
 
     // ArmBotのインスタンスを作成
     let mut arm_bot = ArmBot::new();
