@@ -10,7 +10,14 @@ use hkdt_rs::{log_info, log_err};
 fn main()
 {
     // シリアルポートを開く。デバイス名とボーレートは環境に合わせて変更してください。
-    let mut serial = Serial::new("ArmBot_Serial", "/dev/ttyACM0", 115200).unwrap();
+    let mut serial = match Serial::new("Serial", "/dev/ttyACM0", 115200) {
+        Some(s) => s,
+        None => {
+            log_err!("シリアルポートの初期化に失敗しました。");
+            log_err!("プログラムを終了します。");
+            return;
+        }
+    };
 
     // ArmBotのインスタンスを作成
     let mut arm_bot = ArmBot::new();
