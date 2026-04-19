@@ -48,8 +48,8 @@ impl Serial {
             Ok(line) =>{
                 line
             },
-            Err(_e) =>{
-                // log_err!("Failed to read from serial port: {}", e)
+            Err(e) =>{
+                log_err!("Failed to read from serial port: {}", e);
                 None
             },
         }

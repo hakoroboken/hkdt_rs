@@ -18,7 +18,7 @@ impl MotorData {
 
 pub struct ArmBot
 {
-    pub motors: [MotorData; 3],
+    motors: [MotorData; 3],
 }
 
 impl ArmBot {
@@ -34,7 +34,7 @@ impl ArmBot {
         Self { motors }
     }
 
-    pub fn update(&mut self, read_line : String)
+    pub fn update_sensor(&mut self, read_line : String)
     {
         let mut byte_vec = Vec::<u8>::new();
         for i in read_line.split_whitespace()
@@ -82,5 +82,20 @@ impl ArmBot {
                 }
             }
         }
+    }
+
+    pub fn  get_horizontal_motor(&self)->MotorData
+    {
+        self.motors[0]
+    }
+
+    pub fn get_vertical_motor(&self)->MotorData
+    {
+        self.motors[1]
+    }
+
+    pub fn get_hand_motor(&self)->MotorData
+    {
+        self.motors[2]
     }
 }

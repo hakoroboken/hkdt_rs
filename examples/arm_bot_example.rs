@@ -1,5 +1,6 @@
 use hkdt_rs::connection::serial::Serial;
 use hkdt_rs::arm_bot::ArmBot;
+use hkdt_rs::log_info;
 
 fn main()
 {
@@ -18,8 +19,8 @@ fn main()
 
         match s {
             Some(line) =>{
-                arm_bot.update(line);
-                println!("ArmBot Data: {:?}", arm_bot.motors[1]);
+                arm_bot.update_sensor(line);
+                log_info!("Hand : {:?}", arm_bot.get_hand_motor());
             },
             None => println!("Failed to read from serial port"),
         }
