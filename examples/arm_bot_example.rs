@@ -26,7 +26,9 @@ fn main()
                 // 読み取ったデータをArmBotのセンサーデータとして更新します。
                 arm_bot.update_sensor(line);
                 // 更新されたセンサーデータをログに出力します。
-                log_info!("Hand : {:?}", arm_bot.get_hand_motor());
+                log_info!("ハンド : {:?}", arm_bot.get_hand_motor());
+                log_info!("上昇機構: {:?}", arm_bot.get_vertical_motor());
+                log_info!("水平移動機構: {:?}", arm_bot.get_horizontal_motor());
             },
             None => {
                 log_err!("データが空でした。シリアル通信に問題がある可能性があります。");
