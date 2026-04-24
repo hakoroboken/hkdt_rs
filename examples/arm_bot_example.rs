@@ -2,7 +2,7 @@
 
 use hkdt_rs::arm_bot::ArmBot; // ArmBotを処理するためのライブラリ
 use hkdt_rs::connection::serial::Serial; // シリアル通信用ライブラリ
-use hkdt_rs::{log_err, log_info}; // デバッグ出力用のマクロ
+use hkdt_rs::{log_err, log_info, log_warn}; // デバッグ出力用のマクロ
 
 fn main() {
     // シリアルポートを開く。デバイス名とボーレートは環境に合わせて変更してください。
@@ -20,8 +20,28 @@ fn main() {
 
     // シリアル通信による受信、そしてセンサーデータの更新をループで行います。
     loop {
+        let mut send_data = [0_u8; 8];
+        send_data[0] = 127;
+        send_data[1] = 127;
+        send_data[2] = 140;
+        send_data[3] = 0;
+        send_data[4] = 0;
+        send_data[5] = 0;
+        send_data[6] = b'\r';
+        send_data[7] = b'\n';
+        let write_result = serial.write(&send_data);
+
+        if write_result
+        {
+            log_info!("データを送信しました: {:?}", send_data);
+        } else {
+            log_err!("データの送信に失敗しました。");
+        }
+
         // シリアルポートからデータを読み取ります。
         let from_arm_bot = serial.read_str();
+
+
 
         // 読み取ったデータはOption型で返されるため、Some(読み取り成功)かNone(読み取り失敗)かを確認します。
         match from_arm_bot {
@@ -29,9 +49,9 @@ fn main() {
                 // 読み取ったデータをArmBotのセンサーデータとして更新します。
                 arm_bot.update_sensor(line);
                 // 更新されたセンサーデータをログに出力します。
-                log_info!("ハンド : {:?}", arm_bot.get_hand_motor());
-                log_info!("上昇機構: {:?}", arm_bot.get_vertical_motor());
-                log_info!("水平移動機構: {:?}", arm_bot.get_horizontal_motor());
+                log_info!("ハンド : {}", arm_bot.get_hand_motor().position);
+                log_warn!("上昇機構: {}", arm_bot.get_vertical_motor().position);
+                log_err!("水平移動機構: {}", arm_bot.get_horizontal_motor().position);
             }
             None => {
                 log_err!("データが空でした。シリアル通信に問題がある可能性があります。");

@@ -1,3 +1,10 @@
+pub const ARM_BOT_MAX_HORIZONTAL_POSITION: f32 = 0.0;
+pub const ARM_BOT_MIN_HORIZONTAL_POSITION: f32 = -145.0;
+pub const ARM_BOT_MAX_VERTICAL_POSITION: f32 = 0.0;
+pub const ARM_BOT_MIN_VERTICAL_POSITION: f32 = -110.0;
+pub const ARM_BOT_MAX_HAND_POSITION: f32 = 25.0;
+pub const ARM_BOT_MIN_HAND_POSITION: f32 = -25.0;
+
 #[derive(Debug, Clone, Copy)]
 pub struct MotorData {
     first_count: i16,

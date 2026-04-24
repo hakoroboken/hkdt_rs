@@ -1,3 +1,5 @@
+use crate::log_err;
+
 use std::net::UdpSocket;
 use std::time::{Duration, Instant};
 
@@ -20,5 +22,26 @@ impl UdpHandler {
             destination_addr: None,
             recv_destination_addr: None,
         }
+    }
+
+    pub fn open_localhost(&mut self, port : u16)->bool
+    {
+        if self.socket.is_some(){
+            return false;
+        }
+
+        let addr = format!("127.0.0.1:{}", port);
+
+        match UdpSocket::bind(addr.as_str()){
+            Ok(sock)=>{
+
+            },
+            Err(e)=>{
+                log_err!("UDPソケットのバインドに失敗しました: {}", e);
+                return false;
+            }
+        }
+
+        true
     }
 }
