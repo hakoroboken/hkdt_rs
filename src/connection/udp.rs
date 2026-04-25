@@ -24,24 +24,23 @@ impl UdpHandler {
         }
     }
 
-    pub fn open_localhost(&mut self, port : u16)->bool
-    {
-        if self.socket.is_some(){
+    pub fn open_localhost(&mut self, port: u16) -> bool {
+        if self.socket.is_some() {
             return false;
         }
 
         let addr = format!("127.0.0.1:{}", port);
 
-        match UdpSocket::bind(addr.as_str()){
-            Ok(sock)=>{
+        match UdpSocket::bind(addr.as_str()) {
+            Ok(sock) => {
+                self.socket = Some(sock);
 
-            },
-            Err(e)=>{
-                log_err!("UDPソケットのバインドに失敗しました: {}", e);
+                return true;
+            }
+            Err(e) => {
+                log_err!("[{}] UDPソケットのバインドに失敗しました: {}", self.name, e);
                 return false;
             }
         }
-
-        true
     }
 }
