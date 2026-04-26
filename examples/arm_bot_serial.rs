@@ -2,7 +2,19 @@
 
 use hkdt_rs::arm_bot::ArmBot; // ArmBotを処理するためのライブラリ
 use hkdt_rs::connection::serial::Serial; // シリアル通信用ライブラリ
+use hkdt_rs::connection::udp::UdpHandler; // UDP通信用ライブラリ
+use hkdt_rs::{impl_jsonable, json::Jsonable};
 use hkdt_rs::{log_err, log_info, log_warn}; // デバッグ出力用のマクロ
+
+use serde::{Deserialize, Serialize};
+
+#[derive(Clone, Copy, Serialize, Deserialize)]
+struct FromServerData {
+    x: f64,
+    y: f64,
+    rot: f64,
+}
+impl_jsonable!(FromServerData);
 
 fn main() {
     // シリアルポートを開く。デバイス名とボーレートは環境に合わせて変更してください。
@@ -15,20 +27,22 @@ fn main() {
         }
     };
 
+    let mut udp = UdpHandler::new("UdpReceiver");
+    udp.open_localhost(4000);
+
     // ArmBotのインスタンスを作成
     let mut arm_bot = ArmBot::new();
 
     // シリアル通信による受信、そしてセンサーデータの更新をループで行います。
     loop {
-        let mut send_data = [0_u8; 8];
-        send_data[0] = 127;
-        send_data[1] = 127;
-        send_data[2] = 140;
-        send_data[3] = 0;
-        send_data[4] = 0;
-        send_data[5] = 0;
-        send_data[6] = b'\r';
-        send_data[7] = b'\n';
+        match udp.recv() {
+            Some(str) => {
+                let data = FromServerData::from_string(str.as_str());
+            }
+            None => {}
+        }
+
+        let send_data = arm_bot.create_send_buffer(0.0, 0.0, 0.0, 0, 0, 0);
         let write_result = serial.write(&send_data);
 
         if write_result {
