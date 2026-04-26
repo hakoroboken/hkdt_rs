@@ -43,6 +43,28 @@ impl ArmBot {
         Self { motors }
     }
 
+    pub fn create_send_buffer(
+        &self,
+        wheel1: f64,
+        wheel2: f64,
+        wheel3: f64,
+        horizon: i16,
+        vertical: i16,
+        hand: i16,
+    ) -> [u8; 8] {
+        let mut send_data = [0_u8; 8];
+        send_data[0] = pwm_to_byte(wheel1);
+        send_data[1] = pwm_to_byte(wheel2);
+        send_data[2] = pwm_to_byte(wheel3);
+        send_data[3] = current_to_byte(horizon);
+        send_data[4] = current_to_byte(vertical);
+        send_data[5] = current_to_byte(hand);
+        send_data[6] = b'\r';
+        send_data[7] = b'\n';
+
+        send_data
+    }
+
     pub fn update_sensor(&mut self, read_line: String) {
         let mut byte_vec = Vec::<u8>::new();
         for i in read_line.split_whitespace() {
@@ -92,4 +114,12 @@ impl ArmBot {
     pub fn get_hand_motor(&self) -> MotorData {
         self.motors[2]
     }
+}
+
+fn pwm_to_byte(pwm: f64) -> u8 {
+    (pwm * 127.0 + 127.0) as u8
+}
+
+fn current_to_byte(current: i16) -> u8 {
+    ((current / 10000) as f64 * 127.0 + 127.0) as u8
 }
