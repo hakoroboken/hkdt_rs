@@ -1,14 +1,13 @@
 use hkdt_rs::connection::web::WebServer;
-use hkdt_rs::{log_info, log_warn};
 use hkdt_rs::{impl_jsonable, json::Jsonable};
-use serde::{Serialize, Deserialize};
+use hkdt_rs::{log_info, log_warn};
+use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Copy, Serialize, Deserialize)]
-struct FromServerData
-{
-    x : f64,
-    y : f64,
-    rot : f64
+struct FromServerData {
+    x: f64,
+    y: f64,
+    rot: f64,
 }
 impl_jsonable!(FromServerData);
 

@@ -31,8 +31,7 @@ fn main() {
         send_data[7] = b'\n';
         let write_result = serial.write(&send_data);
 
-        if write_result
-        {
+        if write_result {
             log_info!("データを送信しました: {:?}", send_data);
         } else {
             log_err!("データの送信に失敗しました。");
@@ -40,8 +39,6 @@ fn main() {
 
         // シリアルポートからデータを読み取ります。
         let from_arm_bot = serial.read_str();
-
-
 
         // 読み取ったデータはOption型で返されるため、Some(読み取り成功)かNone(読み取り失敗)かを確認します。
         match from_arm_bot {
