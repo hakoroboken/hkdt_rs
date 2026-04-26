@@ -15,7 +15,7 @@ pub struct KdTree {
 }
 
 impl KdTree {
-    pub fn new(mut points : Vec<Position2D>) -> Self {
+    pub fn new(mut points: Vec<Position2D>) -> Self {
         let mut nodes = Vec::with_capacity(points.len());
         let root = Self::build(&mut points, &mut nodes, 0);
         return KdTree {
@@ -24,8 +24,7 @@ impl KdTree {
         };
     }
 
-    fn build(points : &mut [Position2D], nodes : &mut Vec<KdNode>, depth : usize)->Option<usize>
-    {
+    fn build(points: &mut [Position2D], nodes: &mut Vec<KdNode>, depth: usize) -> Option<usize> {
         if points.is_empty() {
             return None;
         }
@@ -34,11 +33,10 @@ impl KdTree {
         let mid = points.len() / 2;
 
         // pointsをaxisに基づいてmidで並び替える
-        points.select_nth_unstable_by(mid, |a, b|{
+        points.select_nth_unstable_by(mid, |a, b| {
             if axis == 0 {
                 a.x.total_cmp(&b.x)
-            }
-            else {
+            } else {
                 a.y.total_cmp(&b.y)
             }
         });
@@ -50,16 +48,16 @@ impl KdTree {
 
         // 新しいノードを作成してnodesに追加
         let node_index = nodes.len();
-        nodes.push(KdNode { 
-            point: *median, 
-            left: None, 
-            right: None, 
-            axis 
+        nodes.push(KdNode {
+            point: *median,
+            left: None,
+            right: None,
+            axis,
         });
 
         // 左右の部分を再帰的にビルド
-        let left_child = Self::build(left, nodes, depth+1);
-        let right_child = Self::build(right, nodes, depth+1);
+        let left_child = Self::build(left, nodes, depth + 1);
+        let right_child = Self::build(right, nodes, depth + 1);
 
         // 現在のノードに左右の子ノードのインデックスを設定
         nodes[node_index].left = left_child;
@@ -69,7 +67,12 @@ impl KdTree {
         return Some(node_index);
     }
 
-    fn nearest_rec(&self, node_index : Option<usize>, target : &Position2D, best : &mut Option<(Position2D, f32)>) {
+    fn nearest_rec(
+        &self,
+        node_index: Option<usize>,
+        target: &Position2D,
+        best: &mut Option<(Position2D, f32)>,
+    ) {
         let Some(index) = node_index else {
             return;
         };
