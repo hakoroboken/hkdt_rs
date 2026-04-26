@@ -44,22 +44,22 @@ impl UdpHandler {
         }
     }
 
-    pub fn open_auto_address(&mut self, period : u64)
-    {
-        if self.socket.is_some()
-        {
+    pub fn open_auto_address(&mut self, period: u64) {
+        if self.socket.is_some() {
             log_warn!("[{}]ソケットが作成済みです。.", self.name);
             return;
         }
 
         match UdpSocket::bind("0.0.0.0:0") {
-            Ok(socket)=>{
+            Ok(socket) => {
                 socket.connect("8.8.8.8:80").unwrap();
 
-                socket.set_read_timeout(Some(Duration::from_millis(period))).unwrap();
+                socket
+                    .set_read_timeout(Some(Duration::from_millis(period)))
+                    .unwrap();
                 self.socket = Some(socket)
             }
-            Err(e)=>{
+            Err(e) => {
                 log_err!("[{}]UDPソケットのバインドに失敗しました : {}", self.name, e);
             }
         }
@@ -68,65 +68,58 @@ impl UdpHandler {
     /// 設定したアドレスでソケットを作成する
     /// * `addr` - ポートもまとめたアドレス。例えば「192.168.0.50:64202」と入力する
     /// * `period` - 受信のタイムアウトを設定する。例えば`1`にすると受信待機してから１ｍｓ受信できないとエラーを吐くようにする
-    pub fn open_set_address(&mut self, addr : &str, period : u64)
-    {
-        if self.socket.is_some()
-        {
+    pub fn open_set_address(&mut self, addr: &str, period: u64) {
+        if self.socket.is_some() {
             log_warn!("[{}] ソケットが作成済みです。", self.name);
             return;
         }
 
         match UdpSocket::bind(addr) {
-            Ok(socket)=>{
-                socket.set_read_timeout(Some(Duration::from_millis(period))).unwrap();
+            Ok(socket) => {
+                socket
+                    .set_read_timeout(Some(Duration::from_millis(period)))
+                    .unwrap();
                 self.socket = Some(socket)
             }
-            Err(e)=>{
-                log_err!("[{}] UDPソケットのバインドに失敗しました : {}", self.name, e);
+            Err(e) => {
+                log_err!(
+                    "[{}] UDPソケットのバインドに失敗しました : {}",
+                    self.name,
+                    e
+                );
             }
         }
     }
 
     /// 送信相手のアドレスを登録する
     /// * `addr` - 相手のアドレス。例えば「192.168.0.50:64201」
-    pub fn set_destination(&mut self, addr : &str)
-    {
+    pub fn set_destination(&mut self, addr: &str) {
         self.destination_addr = Some(addr.to_string());
     }
 
     /// 送信周期を決める
     /// * `period` - ミリ秒で設定する。例えば1msごとに送信したい場合は`1`を入れる
-    pub fn set_send_period(&mut self, period : u64)
-    {
+    pub fn set_send_period(&mut self, period: u64) {
         self.period = Duration::from_millis(period);
     }
 
-
     /// 登録したアドレスに値を送信する
     /// * `buf` - 8bitの正の整数の配列のポインタ
-    pub fn send(&mut self, buf : &[u8])
-    {
-        if self.timer.elapsed() >= self.period
-        {
+    pub fn send(&mut self, buf: &[u8]) {
+        if self.timer.elapsed() >= self.period {
             match &self.socket {
-                Some(sock)=>{
-                    match self.destination_addr.clone()
-                    {
-                        Some(dest)=>{
-                            match sock.send_to(buf, dest.as_str()) {
-                                Ok(_s)=>{
-                                }
-                                Err(e)=>{
-                                    log_err!("[{}] 送信相に失敗しました : {}", self.name, e);
-                                }
-                            }
+                Some(sock) => match self.destination_addr.clone() {
+                    Some(dest) => match sock.send_to(buf, dest.as_str()) {
+                        Ok(_s) => {}
+                        Err(e) => {
+                            log_err!("[{}] 送信相に失敗しました : {}", self.name, e);
                         }
-                        None=>{
-                            log_warn!("[{}]送信相手が設定されていません。", self.name);
-                        }
+                    },
+                    None => {
+                        log_warn!("[{}]送信相手が設定されていません。", self.name);
                     }
-                }
-                None=>{
+                },
+                None => {
                     log_warn!("[{}]ソケットが作成されていません", self.name);
                 }
             }
@@ -135,29 +128,26 @@ impl UdpHandler {
         }
     }
 
-    pub fn recv(&mut self)->Option<String>
-    {
+    pub fn recv(&mut self) -> Option<String> {
         let mut buf = [0_u8; 1024];
         match &self.socket {
-            Some(socket)=>{
-                match socket.recv_from(&mut buf) {
-                    Ok((size, dest_addr))=>{
-                        let get_data = &buf[..size];
-                        
-                        self.recv_destination_addr = Some(dest_addr.to_string());
+            Some(socket) => match socket.recv_from(&mut buf) {
+                Ok((size, dest_addr)) => {
+                    let get_data = &buf[..size];
 
-                        let str = String::from_utf8_lossy(&get_data).to_string();
+                    self.recv_destination_addr = Some(dest_addr.to_string());
 
-                        Some(str)
-                    }
-                    Err(e)=>{
-                        log_err!("[{}] 受信に失敗しました : {}", self.name, e);
+                    let str = String::from_utf8_lossy(&get_data).to_string();
 
-                        None
-                    }
+                    Some(str)
                 }
-            }
-            None=>{
+                Err(e) => {
+                    log_err!("[{}] 受信に失敗しました : {}", self.name, e);
+
+                    None
+                }
+            },
+            None => {
                 log_warn!("[{}] ソケットが作成されていません", self.name);
 
                 None
@@ -167,13 +157,10 @@ impl UdpHandler {
 
     /// データを送ってきた相手のアドレスを取得する。
     /// 受信後でないと`None`が返ってくる
-    pub fn who(&self)->String
-    {
-        if self.recv_destination_addr.is_some()
-        {
+    pub fn who(&self) -> String {
+        if self.recv_destination_addr.is_some() {
             self.recv_destination_addr.clone().unwrap()
-        }
-        else {
+        } else {
             String::from("None")
         }
     }
