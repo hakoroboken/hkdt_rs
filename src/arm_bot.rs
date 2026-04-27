@@ -53,12 +53,12 @@ impl ArmBot {
         hand: i16,
     ) -> [u8; 8] {
         let mut send_data = [0_u8; 8];
-        send_data[0] = pwm_to_byte(wheel1);
-        send_data[1] = pwm_to_byte(wheel2);
-        send_data[2] = pwm_to_byte(wheel3);
-        send_data[3] = current_to_byte(horizon);
-        send_data[4] = current_to_byte(vertical);
-        send_data[5] = current_to_byte(hand);
+        send_data[0] = current_to_byte(horizon);
+        send_data[1] = current_to_byte(vertical);
+        send_data[2] = current_to_byte(hand);
+        send_data[3] = pwm_to_byte(wheel1);
+        send_data[4] = pwm_to_byte(wheel2);
+        send_data[5] = pwm_to_byte(wheel3);
         send_data[6] = b'\r';
         send_data[7] = b'\n';
 
