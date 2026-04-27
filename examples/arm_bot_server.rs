@@ -18,7 +18,7 @@ async fn main() {
     log_info!("TCPサーバーを起動します...");
     let mut server = WebServer::new("ArmBotServer");
 
-    if server.open_server("192.168.11.12", 64201).await {
+    if server.open_server("10.181.15.175", 64201).await {
         log_info!("TCPサーバーが正常に起動しました。クライアントからの接続を待っています...");
 
         server.accept_connections().await;

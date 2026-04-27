@@ -38,35 +38,39 @@ fn main() {
         match udp.recv() {
             Some(str) => {
                 let data = FromServerData::from_string(str.as_str());
+                
+                let h = (data.x * 10000.0) as i16;
+                let h2 = (data.y * 10000.0) as i16;
+                let h3 = (data.rot * 10000.0) as i16;
+
+                let send_data = arm_bot.create_send_buffer(0.0, 0.0, 0.0, h, h2, h3);
+                let write_result = serial.write(&send_data);
+
+                if write_result {
+                    log_info!("データを送信しました: {:?}", send_data);
+                } else {
+                    log_err!("データの送信に失敗しました。");
+                }
+
+                // シリアルポートからデータを読み取ります。
+                let from_arm_bot = serial.read_str();
+
+                // 読み取ったデータはOption型で返されるため、Some(読み取り成功)かNone(読み取り失敗)かを確認します。
+                match from_arm_bot {
+                    Some(line) => {
+                        // 読み取ったデータをArmBotのセンサーデータとして更新します。
+                        arm_bot.update_sensor(line);
+                        // 更新されたセンサーデータをログに出力します。
+                        log_info!("ハンド : {}", arm_bot.get_hand_motor().position);
+                        log_warn!("上昇機構: {}", arm_bot.get_vertical_motor().position);
+                        log_err!("水平移動機構: {}", arm_bot.get_horizontal_motor().position);
+                    }
+                    None => {
+                        log_err!("データが空でした。シリアル通信に問題がある可能性があります。");
+                    }
+                }
             }
             None => {}
-        }
-
-        let send_data = arm_bot.create_send_buffer(0.0, 0.0, 0.0, 0, 0, 0);
-        let write_result = serial.write(&send_data);
-
-        if write_result {
-            log_info!("データを送信しました: {:?}", send_data);
-        } else {
-            log_err!("データの送信に失敗しました。");
-        }
-
-        // シリアルポートからデータを読み取ります。
-        let from_arm_bot = serial.read_str();
-
-        // 読み取ったデータはOption型で返されるため、Some(読み取り成功)かNone(読み取り失敗)かを確認します。
-        match from_arm_bot {
-            Some(line) => {
-                // 読み取ったデータをArmBotのセンサーデータとして更新します。
-                arm_bot.update_sensor(line);
-                // 更新されたセンサーデータをログに出力します。
-                log_info!("ハンド : {}", arm_bot.get_hand_motor().position);
-                log_warn!("上昇機構: {}", arm_bot.get_vertical_motor().position);
-                log_err!("水平移動機構: {}", arm_bot.get_horizontal_motor().position);
-            }
-            None => {
-                log_err!("データが空でした。シリアル通信に問題がある可能性があります。");
-            }
         }
     }
 }
