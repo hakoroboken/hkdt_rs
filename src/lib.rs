@@ -5,3 +5,4 @@ pub mod connection;
 pub mod control;
 pub mod json;
 pub mod kinematics;
+pub mod launch;
