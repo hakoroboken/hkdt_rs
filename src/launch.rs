@@ -27,6 +27,7 @@ impl MultiProcessLauncher {
     {
         for name in cmds
         {
+            crate::log_info!("[Launch] {}を実行", name);
             let mut child = Command::new(name)
                 .stdout(Stdio::piped())
                 .stderr(Stdio::piped())
@@ -36,7 +37,7 @@ impl MultiProcessLauncher {
                 tokio::spawn(async move {
                     let mut reader = BufReader::new(stdout).lines();
                     while let Ok(Some(line)) = reader.next_line().await {
-                        println!("{}",line);
+                        crate::log_info!("{}", line);
                     }
                 });
             }
@@ -46,7 +47,7 @@ impl MultiProcessLauncher {
                 tokio::spawn(async move {
                     let mut reader = BufReader::new(stderr).lines();
                     while let Ok(Some(line)) = reader.next_line().await {
-                        eprintln!("{}", line);
+                        crate::log_err!("{}", line);
                     }
                 });
             }
@@ -61,7 +62,7 @@ impl MultiProcessLauncher {
 
         for ch in &mut self.process{
             if let Some(id) = ch.child.id() {
-                println!("Killing {} (pid={})", ch.name, id);
+                crate::log_info!("プロセスを終了します :{} (pid={})", ch.name, id);
             }
             let _ = ch.child.kill().await;
         }
