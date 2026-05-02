@@ -27,7 +27,10 @@ impl Serial {
 
     pub fn write(&mut self, data: &[u8]) -> bool {
         match self.port.write(data) {
-            Ok(_) => true,
+            Ok(_) => {
+                let _ = self.port.flush();
+                true
+            },
             Err(e) => {
                 log_err!(
                     "[{}]シリアル通信の書き込みに失敗しました。: {}",

@@ -67,13 +67,20 @@ impl ArmBot {
 
     pub fn update_sensor(&mut self, read_line: String) {
         let mut byte_vec = Vec::<u8>::new();
+
+        // println!("{}", read_line);
         for i in read_line.split_whitespace() {
-            byte_vec.push(i.parse::<u8>().unwrap());
+            match i.parse::<u8>()
+            {
+                Ok(u)=>byte_vec.push(u),
+                Err(_)=>{
+                    return;
+                }
+            }
         }
         let data = byte_vec.as_slice();
 
-        if data.len() < 17 {
-        } else {
+        if data.len() > 17 && data.len() < 19 {
             let mut motors = [MotorData::new(); 3];
             for i in 0..3 {
                 motors[i].count = (data[i * 6] as i16) << 8 | (data[i * 6 + 1] as i16);
@@ -101,6 +108,9 @@ impl ArmBot {
                 }
             }
         }
+        else {
+            
+        }
     }
 
     pub fn get_horizontal_motor(&self) -> MotorData {
@@ -120,6 +130,6 @@ fn pwm_to_byte(pwm: f64) -> u8 {
     (pwm * 127.0 + 127.0) as u8
 }
 
-fn current_to_byte(current: i16) -> u8 {
-    ((current / 10000) as f64 * 127.0 + 127.0) as u8
+pub fn current_to_byte(current: i16) -> u8 {
+    ((current as f64 / 10000.0) * 127.0) as u8 + 127
 }
