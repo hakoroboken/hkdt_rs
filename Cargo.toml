@@ -4,11 +4,21 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+# 色付きログ出力するクレート
 colored = "2.1.0"
+
+# シリアル通信用クレート
 termion = "1.5"
 serialport = "4.2.0"
+
+# 非同期処理用クレート
 tokio = { version = "1", features = ["full"] }
 tokio-tungstenite = "0.21"
 futures-util = "0.3"
+
+# 構造体をJsonへ変換するためのクレート
 serde = {version = "1.0.148", features = ["derive"]}
 serde_json = "1.0.41"
+
+# 行列計算クレート
+nalgebra = "*"
