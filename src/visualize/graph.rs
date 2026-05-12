@@ -93,6 +93,18 @@ impl Plotter {
         self.plots.push(new_plot);
     }
 
+    pub fn add_point(&mut self, point : Position2D, color : PlotColor)
+    {
+        let pt_vec = vec![(point.x as f64, point.y as f64)];
+
+        let new_plot = Plot::new(pt_vec).point_style(
+            PointStyle::new()
+                .colour(color.to_str())
+                .size(1.0)
+        );
+        self.plots.push(new_plot);
+    }
+
     pub fn save(&self, file_name : &str)
     {
         let view = ContinuousView::new();
