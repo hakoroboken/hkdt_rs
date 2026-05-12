@@ -1,3 +1,5 @@
+use crate::common::Position2D;
+
 use plotlib::{
     page::Page,
     repr::Plot,
@@ -73,9 +75,16 @@ impl Plotter {
         self.plots.push(new_plot);
     }
 
-    pub fn add_points(&mut self, points : Vec<(f64, f64)>, color : PlotColor)
+    pub fn add_points(&mut self, points : Vec<Position2D>, color : PlotColor)
     {
-        let new_plot = Plot::new(points).point_style(
+        let mut pt_vec = vec![];
+
+        for p in points
+        {
+            pt_vec.push((p.x as f64, p.y as f64));
+        }
+
+        let new_plot = Plot::new(pt_vec).point_style(
             PointStyle::new()
                 .colour(color.to_str())
                 .size(1.0)
