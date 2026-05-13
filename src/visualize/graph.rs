@@ -87,7 +87,7 @@ impl Plotter {
         let new_plot = Plot::new(pt_vec).point_style(
             PointStyle::new()
                 .colour(color.to_str())
-                .size(1.0)
+                .size(3.0)
         );
 
         self.plots.push(new_plot);
@@ -100,7 +100,7 @@ impl Plotter {
         let new_plot = Plot::new(pt_vec).point_style(
             PointStyle::new()
                 .colour(color.to_str())
-                .size(1.0)
+                .size(3.0)
         );
         self.plots.push(new_plot);
     }
