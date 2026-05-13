@@ -283,6 +283,7 @@ dependencies = [
  "futures-util",
  "nalgebra",
  "plotlib",
+ "rand",
  "serde",
  "serde_json",
  "serialport",

@@ -1,3 +1,5 @@
+use rand::{self, Rng};
+
 #[derive(Debug, Clone, Copy)]
 pub struct Position2D {
     pub x: f32,
@@ -16,6 +18,21 @@ impl Position2D {
 
     pub fn norm_squared(&self) -> f32 {
         return self.x * self.x + self.y * self.y;
+    }
+
+    pub fn random_pointcloud(num : usize, min_x : f32, max_x : f32, min_y : f32, max_y : f32)->Vec<Self>
+    {
+        let mut rng = rand::thread_rng();
+
+        let points : Vec<Self> = (0..num).map(|_|{
+            Position2D::new(
+                rng.gen_range(min_x..max_x),
+                rng.gen_range(min_y..max_y), 
+                0.0
+            )
+        }).collect();
+
+        points
     }
 }
 
