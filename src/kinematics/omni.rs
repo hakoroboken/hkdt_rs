@@ -25,7 +25,7 @@ impl Omni {
             let name = String::from(pos_name);
 
             // 中心からの距離
-            let distance = pos.squared_distance().sqrt();
+            let distance = pos.norm_squared().sqrt();
 
             let vel = x_vec * pos.yaw.cos() + y_vec * pos.yaw.sin() + rotation_vec * distance;
 

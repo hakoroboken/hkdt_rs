@@ -14,7 +14,7 @@ impl Position2D {
         };
     }
 
-    pub fn squared_distance(&self) -> f32 {
+    pub fn norm_squared(&self) -> f32 {
         return self.x * self.x + self.y * self.y;
     }
 }
