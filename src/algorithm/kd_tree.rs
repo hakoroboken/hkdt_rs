@@ -91,7 +91,7 @@ impl KdTree {
         let dx = node.point.x - target.x;
         let dy = node.point.y - target.y;
 
-        let dist = dx*dx+dy*dy;
+        let dist = dx * dx + dy * dy;
 
         if best.is_none() || dist < best.unwrap().1 {
             *best = Some((node.point, dist))

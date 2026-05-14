@@ -70,10 +70,9 @@ impl ArmBot {
 
         // println!("{}", read_line);
         for i in read_line.split_whitespace() {
-            match i.parse::<u8>()
-            {
-                Ok(u)=>byte_vec.push(u),
-                Err(_)=>{
+            match i.parse::<u8>() {
+                Ok(u) => byte_vec.push(u),
+                Err(_) => {
                     return;
                 }
             }
@@ -107,9 +106,7 @@ impl ArmBot {
                         + (motors[i].count - self.motors[i].first_count) as f32 / 8192.0;
                 }
             }
-        }
-        else {
-            
+        } else {
         }
     }
 

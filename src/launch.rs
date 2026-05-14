@@ -1,32 +1,29 @@
 use tokio::{
     io::{AsyncBufReadExt, BufReader},
     process::Command,
-    signal
+    signal,
 };
 
 use std::process::Stdio;
 
-struct ProcessUnit
-{
-    name : String,
-    child : tokio::process::Child
+struct ProcessUnit {
+    name: String,
+    child: tokio::process::Child,
 }
 
-pub struct MultiProcessLauncher
-{
-    process : Vec<ProcessUnit>
+pub struct MultiProcessLauncher {
+    process: Vec<ProcessUnit>,
 }
 
 impl MultiProcessLauncher {
-    pub fn new()->Self
-    {
-        MultiProcessLauncher { process : Vec::new() }
+    pub fn new() -> Self {
+        MultiProcessLauncher {
+            process: Vec::new(),
+        }
     }
 
-    pub async fn launch(&mut self, cmds : Vec<&str>)-> Result<(), Box<dyn std::error::Error>>
-    {
-        for name in cmds
-        {
+    pub async fn launch(&mut self, cmds: Vec<&str>) -> Result<(), Box<dyn std::error::Error>> {
+        for name in cmds {
             crate::log_info!("[Launch] {}を実行", name);
             let mut child = Command::new(name)
                 .stdout(Stdio::piped())
@@ -60,7 +57,7 @@ impl MultiProcessLauncher {
 
         signal::ctrl_c().await?;
 
-        for ch in &mut self.process{
+        for ch in &mut self.process {
             if let Some(id) = ch.child.id() {
                 crate::log_info!("プロセスを終了します :{} (pid={})", ch.name, id);
             }

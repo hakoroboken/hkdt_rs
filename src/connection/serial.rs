@@ -30,7 +30,7 @@ impl Serial {
             Ok(_) => {
                 let _ = self.port.flush();
                 true
-            },
+            }
             Err(e) => {
                 log_err!(
                     "[{}]シリアル通信の書き込みに失敗しました。: {}",
