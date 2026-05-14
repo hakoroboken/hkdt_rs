@@ -3,16 +3,18 @@ use crate::common::Position2D;
 #[derive(Debug)]
 pub struct KdNode {
     point: Position2D,
-    left: Option<usize>,
-    right: Option<usize>,
+    left: usize,
+    right: usize,
     axis: usize, // 0 for x-axis, 1 for y-axis
 }
 
 #[derive(Debug)]
 pub struct KdTree {
     nodes: Vec<KdNode>,
-    root: Option<usize>,
+    root: usize,
 }
+
+const NONE : usize = std::usize::MAX;
 
 impl KdTree {
     pub fn new(mut points: Vec<Position2D>) -> Self {
@@ -24,9 +26,9 @@ impl KdTree {
         };
     }
 
-    fn build(points: &mut [Position2D], nodes: &mut Vec<KdNode>, depth: usize) -> Option<usize> {
+    fn build(points: &mut [Position2D], nodes: &mut Vec<KdNode>, depth: usize) -> usize {
         if points.is_empty() {
-            return None;
+            return NONE;
         }
 
         let axis = depth % 2;
@@ -50,8 +52,8 @@ impl KdTree {
         let node_index = nodes.len();
         nodes.push(KdNode {
             point: *median,
-            left: None,
-            right: None,
+            left: NONE,
+            right: NONE,
             axis,
         });
 
@@ -64,7 +66,7 @@ impl KdTree {
         nodes[node_index].right = right_child;
 
         // 現在のノードのインデックスを返す
-        return Some(node_index);
+        return node_index;
     }
 
     pub fn nearest(&self, target: &Position2D) -> Option<(Position2D, f32)> {
@@ -77,15 +79,16 @@ impl KdTree {
 
     fn nearest_rec(
         &self,
-        node_index: Option<usize>,
+        node_index: usize,
         target: &Position2D,
         best: &mut Option<(Position2D, f32)>,
     ) {
-        let Some(index) = node_index else {
+        if node_index == NONE
+        {
             return;
-        };
+        }
 
-        let node = &self.nodes[index];
+        let node = &self.nodes[node_index];
 
         // 現在のノードとターゲットの距離を計算
         let dx = node.point.x - target.x;
