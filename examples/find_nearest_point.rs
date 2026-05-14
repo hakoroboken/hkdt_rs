@@ -9,10 +9,10 @@ const POINT_NUM: usize = 5000;
 
 fn main() {
     // ランダムな点群を生成
-    // -6.0 < x < 6.0
-    // -6.0 < y < 6.0
+    // -12.0 < x < 12.0
+    // -12.0 < y < 12.0
     // 点の数はPOINT_NUM個
-    let point_cloud = random_pointcloud2d(POINT_NUM, -12.0, 12.0, -12.0, 12.0);
+    let point_cloud = random_pointcloud2d(POINT_NUM, -12.0..12.0, -12.0..12.0);
 
     // ここではx = 1.5 y = 0.0の点に対して最も距離の近い点を見つける
     let target_point = Point2::new(1.5, 0.0);

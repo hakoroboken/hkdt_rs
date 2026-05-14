@@ -6,10 +6,8 @@ extern crate nalgebra;
 pub type Point2 = nalgebra::Vector2<f32>;
 pub fn random_pointcloud2d(
     num: usize,
-    min_x: f32,
-    max_x: f32,
-    min_y: f32,
-    max_y: f32,
+    x_range : std::ops::Range<f32>,
+    y_range : std::ops::Range<f32>,
 )->Vec<Point2>
 {
     let mut rng = rand::thread_rng();
@@ -17,8 +15,8 @@ pub fn random_pointcloud2d(
     let points: Vec<Point2> = (0..num)
         .map(|_| {
             Point2::new(
-                rng.gen_range(min_x..max_x),
-                rng.gen_range(min_y..max_y)
+                rng.gen_range(x_range.clone()),
+                rng.gen_range(y_range.clone())
             )
         })
         .collect();
