@@ -88,7 +88,10 @@ impl KdTree {
         let node = &self.nodes[index];
 
         // 現在のノードとターゲットの距離を計算
-        let dist = Self::distance_squared(&node.point, target);
+        let dx = node.point.x - target.x;
+        let dy = node.point.y - target.y;
+
+        let dist = dx*dx+dy*dy;
 
         if best.is_none() || dist < best.unwrap().1 {
             *best = Some((node.point, dist))
@@ -117,11 +120,5 @@ impl KdTree {
         if best.is_none() || diff * diff < best.unwrap().1 {
             self.nearest_rec(other, target, best);
         }
-    }
-
-    fn distance_squared(a: &Position2D, b: &Position2D) -> f32 {
-        let dx = a.x - b.x;
-        let dy = a.y - b.y;
-        return dx * dx + dy * dy;
     }
 }
