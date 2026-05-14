@@ -1,8 +1,8 @@
-use crate::common::Position2D;
+use crate::common::Point2;
 
 #[derive(Debug)]
 pub struct KdNode {
-    point: Position2D,
+    point: Point2,
     left: usize,
     right: usize,
     axis: usize, // 0 for x-axis, 1 for y-axis
@@ -17,7 +17,7 @@ pub struct KdTree {
 const NONE : usize = std::usize::MAX;
 
 impl KdTree {
-    pub fn new(mut points: Vec<Position2D>) -> Self {
+    pub fn new(mut points: Vec<Point2>) -> Self {
         let mut nodes = Vec::with_capacity(points.len());
         let root = Self::build(&mut points, &mut nodes, 0);
         return KdTree {
@@ -26,7 +26,7 @@ impl KdTree {
         };
     }
 
-    fn build(points: &mut [Position2D], nodes: &mut Vec<KdNode>, depth: usize) -> usize {
+    fn build(points: &mut [Point2], nodes: &mut Vec<KdNode>, depth: usize) -> usize {
         if points.is_empty() {
             return NONE;
         }
@@ -69,7 +69,7 @@ impl KdTree {
         return node_index;
     }
 
-    pub fn nearest(&self, target: &Position2D) -> Option<(Position2D, f32)> {
+    pub fn nearest(&self, target: &Point2) -> Option<(Point2, f32)> {
         let mut best = None;
 
         self.nearest_rec(self.root, target, &mut best);
@@ -80,8 +80,8 @@ impl KdTree {
     fn nearest_rec(
         &self,
         node_index: usize,
-        target: &Position2D,
-        best: &mut Option<(Position2D, f32)>,
+        target: &Point2,
+        best: &mut Option<(Point2, f32)>,
     ) {
         if node_index == NONE
         {

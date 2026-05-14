@@ -1,6 +1,6 @@
 use hkdt_rs::{
     algorithm::{brute_force, kd_tree},
-    common::Position2D,
+    common::{Point2, random_pointcloud2d},
     log_err, log_info,
 };
 
@@ -12,16 +12,16 @@ fn main() {
     // -6.0 < x < 6.0
     // -6.0 < y < 6.0
     // 点の数はPOINT_NUM個
-    let point_cloud = Position2D::random_pointcloud(POINT_NUM, -12.0, 12.0, -12.0, 12.0);
+    let point_cloud = random_pointcloud2d(POINT_NUM, -12.0, 12.0, -12.0, 12.0);
 
     // ここではx = 1.5 y = 0.0の点に対して最も距離の近い点を見つける
-    let target_point = Position2D::new(1.5, 0.0, 0.0);
+    let target_point = Point2::new(1.5, 0.0);
 
     kd_tree_example(point_cloud.clone(), target_point);
     brute_force_example(point_cloud.clone(), target_point);
 }
 
-fn kd_tree_example(point_cloud: Vec<Position2D>, target: Position2D) {
+fn kd_tree_example(point_cloud: Vec<Point2>, target: Point2) {
     let kdtree = kd_tree::KdTree::new(point_cloud.clone());
 
     let timer = std::time::Instant::now();
@@ -51,7 +51,7 @@ fn kd_tree_example(point_cloud: Vec<Position2D>, target: Position2D) {
     log_info!("目標との距離：\t{}[m]", best_dist.unwrap());
 }
 
-fn brute_force_example(point_cloud: Vec<Position2D>, target: Position2D) {
+fn brute_force_example(point_cloud: Vec<Point2>, target: Point2) {
     let timer = std::time::Instant::now();
 
     let (best_i, best_distance_squared) = brute_force::brute_force(&point_cloud, target);

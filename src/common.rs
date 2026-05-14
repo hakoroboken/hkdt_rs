@@ -1,45 +1,55 @@
+use nalgebra::Isometry2;
 use rand::{self, Rng};
+
+extern crate nalgebra;
+
+pub type Point2 = nalgebra::Vector2<f32>;
+pub fn random_pointcloud2d(
+    num: usize,
+    min_x: f32,
+    max_x: f32,
+    min_y: f32,
+    max_y: f32,
+)->Vec<Point2>
+{
+    let mut rng = rand::thread_rng();
+
+    let points: Vec<Point2> = (0..num)
+        .map(|_| {
+            Point2::new(
+                rng.gen_range(min_x..max_x),
+                rng.gen_range(min_y..max_y)
+            )
+        })
+        .collect();
+
+    points
+}
 
 #[derive(Debug, Clone, Copy)]
 pub struct Position2D {
-    pub x: f32,
-    pub y: f32,
-    pub yaw: f32,
+    iso : nalgebra::Isometry2<f32>
 }
 
 impl Position2D {
-    pub fn new(x_: f32, y_: f32, yaw_: f32) -> Position2D {
+    pub fn new(x: f32, y: f32, yaw: f32) -> Position2D {
         return Position2D {
-            x: x_,
-            y: y_,
-            yaw: yaw_,
+            iso : Isometry2::new(Point2::new(x, y), yaw)
         };
     }
 
-    pub fn norm_squared(&self) -> f32 {
-        return self.x * self.x + self.y * self.y;
+    pub fn norm(&self) -> f32 {
+        return self.iso.translation.vector.norm()
     }
 
-    pub fn random_pointcloud(
-        num: usize,
-        min_x: f32,
-        max_x: f32,
-        min_y: f32,
-        max_y: f32,
-    ) -> Vec<Self> {
-        let mut rng = rand::thread_rng();
+    pub fn get_position(&self)->Point2
+    {
+        Point2::new(self.iso.translation.x, self.iso.translation.y)
+    }
 
-        let points: Vec<Self> = (0..num)
-            .map(|_| {
-                Position2D::new(
-                    rng.gen_range(min_x..max_x),
-                    rng.gen_range(min_y..max_y),
-                    0.0,
-                )
-            })
-            .collect();
-
-        points
+    pub fn get_theta(&self)->f32
+    {
+        self.iso.rotation.angle()
     }
 }
 

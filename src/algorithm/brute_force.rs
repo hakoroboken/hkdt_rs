@@ -1,6 +1,6 @@
-use crate::common::Position2D;
+use crate::common::Point2;
 
-pub fn brute_force(point_cloud: &[Position2D], target: Position2D) -> (usize, f32) {
+pub fn brute_force(point_cloud: &[Point2], target: Point2) -> (usize, f32) {
     let mut best_d = std::f32::INFINITY;
     let mut best_i = 0;
 

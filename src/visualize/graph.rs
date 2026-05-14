@@ -1,4 +1,4 @@
-use crate::common::Position2D;
+use crate::common::Point2;
 
 use plotlib::{page::Page, repr::Plot, style::*, view::ContinuousView};
 
@@ -61,7 +61,7 @@ impl Plotter {
         self.plots.push(new_plot);
     }
 
-    pub fn add_points(&mut self, points: Vec<Position2D>, color: PlotColor) {
+    pub fn add_points(&mut self, points: Vec<Point2>, color: PlotColor) {
         let mut pt_vec = vec![];
 
         for p in points {
@@ -74,7 +74,7 @@ impl Plotter {
         self.plots.push(new_plot);
     }
 
-    pub fn add_point(&mut self, point: Position2D, color: PlotColor) {
+    pub fn add_point(&mut self, point: Point2, color: PlotColor) {
         let pt_vec = vec![(point.x as f64, point.y as f64)];
 
         let new_plot =

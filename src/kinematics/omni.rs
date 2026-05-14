@@ -25,9 +25,9 @@ impl Omni {
             let name = String::from(pos_name);
 
             // 中心からの距離
-            let distance = pos.norm_squared().sqrt();
-
-            let vel = x_vec * pos.yaw.cos() + y_vec * pos.yaw.sin() + rotation_vec * distance;
+            let distance = pos.norm();
+            let yaw = pos.get_theta();
+            let vel = x_vec * yaw.cos() + y_vec * yaw.sin() + rotation_vec * distance;
 
             if vel > max_velocity {
                 max_velocity = vel;

@@ -46,8 +46,9 @@ impl Swerve {
         for (pos_name, pos) in self.swerve_position_.data.iter() {
             let name = String::from(pos_name);
 
-            let x_velocity = x_vec - rotation_vec * pos.y;
-            let y_velocity = y_vec + rotation_vec * pos.x;
+            let position = pos.get_position();
+            let x_velocity = x_vec - rotation_vec * position.y;
+            let y_velocity = y_vec + rotation_vec * position.x;
 
             let vel = (x_velocity * x_velocity + y_velocity * y_velocity).sqrt();
             let angle = y_velocity.atan2(x_velocity);
