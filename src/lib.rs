@@ -7,3 +7,4 @@ pub mod json;
 pub mod kinematics;
 pub mod launch;
 pub mod visualize;
+pub mod localization;
