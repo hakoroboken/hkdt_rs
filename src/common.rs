@@ -3,6 +3,8 @@ use rand::{self, Rng};
 
 extern crate nalgebra;
 
+pub type Vec3 = nalgebra::Vector3<f32>;
+
 pub type Point2 = nalgebra::Vector2<f32>;
 pub fn random_pointcloud2d(
     num: usize,
