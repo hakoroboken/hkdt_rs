@@ -146,6 +146,8 @@ impl ImuEKF6 {
         &mut self,
         angular_velocity: Vec3,
         linear_accel: Vec3,
+        predict_noise : f32,
+        obs_noise : f32,
         dt: f32,
     ) {
         self.predict(angular_velocity, dt);
@@ -154,8 +156,8 @@ impl ImuEKF6 {
         let predict_jacob = self.calc_jacob(angular_velocity, dt);
         let obs_jacob = Matrix3x2::<f32>::identity();
 
-        let predict_noise = Matrix3::<f32>::identity() * 0.001;
-        let observe_noise = Matrix2::<f32>::identity() * 0.1;
+        let predict_noise = Matrix3::<f32>::identity() * predict_noise;
+        let observe_noise = Matrix2::<f32>::identity() * obs_noise;
 
         let predict_distr = predict_jacob * self.cov_matrix * predict_jacob.transpose() + predict_noise;
         let observe_distr = obs_jacob.transpose() * predict_distr * obs_jacob + observe_noise;
