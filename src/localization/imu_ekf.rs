@@ -1,7 +1,7 @@
 extern crate nalgebra;
-use nalgebra::Matrix3;
+use nalgebra::{Matrix3, Matrix2, Matrix3x2};
 
-use crate::common::Vec3;
+use crate::common::{Vec3, Vec2};
 
 /// extended kalman filter for posture estimation from 9-axis imu
 pub struct ImuEKF9 {
@@ -127,7 +127,7 @@ impl ImuEKF9 {
 pub struct ImuEKF6 {
     state: Vec3,
     predict_state: Vec3,
-    observe_state: Vec3,
+    observe_state: Vec2,
     cov_matrix: Matrix3<f32>,
 }
 
@@ -137,7 +137,7 @@ impl ImuEKF6 {
         Self {
             state: Vec3::new(0.0, 0.0, 0.0),
             predict_state: Vec3::new(0.0, 0.0, 0.0),
-            observe_state: Vec3::new(0.0, 0.0, 0.0),
+            observe_state: Vec2::new(0.0, 0.0),
             cov_matrix: Matrix3::identity(),
         }
     }
@@ -152,17 +152,21 @@ impl ImuEKF6 {
         self.observe(linear_accel);
 
         let predict_jacob = self.calc_jacob(angular_velocity, dt);
-        let obs_jacob = Matrix3::<f32>::identity();
-        let predict_noise = Matrix3::<f32>::identity() * 0.01;
-        let observe_noise = Matrix3::<f32>::identity() * 0.1;
+        let obs_jacob = Matrix3x2::<f32>::identity();
+
+        let predict_noise = Matrix3::<f32>::identity() * 0.001;
+        let observe_noise = Matrix2::<f32>::identity() * 0.1;
 
         let predict_distr = predict_jacob * self.cov_matrix * predict_jacob.transpose() + predict_noise;
-        let observe_distr = obs_jacob * predict_distr * obs_jacob.transpose() + observe_noise;
+        let observe_distr = obs_jacob.transpose() * predict_distr * obs_jacob + observe_noise;
 
-        let kalman_gain = predict_distr * obs_jacob.transpose() * observe_distr.try_inverse().unwrap();
+        // ここのobs_jacobはobs_jacobが入るのではなく、ただ3x2単位行列がほしいだけ
+        let kalman_gain = predict_distr * obs_jacob * observe_distr.try_inverse().unwrap();
 
-        self.state = self.predict_state + kalman_gain * (self.observe_state - self.predict_state);
-        self.cov_matrix = (obs_jacob - kalman_gain) * predict_distr;
+        // ここのobs_jacobもそう
+        self.state = self.predict_state + kalman_gain * (self.observe_state - obs_jacob.transpose() * self.predict_state);
+        // ここもそう
+        self.cov_matrix = (Matrix3::<f32>::identity() - kalman_gain * obs_jacob.transpose()) * predict_distr;
     }
 
     pub fn get_euler(&self)->Vec3
@@ -225,6 +229,6 @@ impl ImuEKF6 {
 
         let y = linear_accel.x.atan2((linear_accel.y*linear_accel.y+linear_accel.z*linear_accel.z).sqrt());
 
-        self.observe_state = Vec3::new(x,y,0.0);
+        self.observe_state = Vec2::new(x,y);
     }
 }
