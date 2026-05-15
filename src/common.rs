@@ -5,18 +5,18 @@ extern crate nalgebra;
 
 pub type Vec3 = nalgebra::Vector3<f32>;
 
-pub type Point2 = nalgebra::Vector2<f32>;
+pub type Vec2 = nalgebra::Vector2<f32>;
 pub fn random_pointcloud2d(
     num: usize,
     x_range : std::ops::Range<f32>,
     y_range : std::ops::Range<f32>,
-)->Vec<Point2>
+)->Vec<Vec2>
 {
     let mut rng = rand::thread_rng();
 
-    let points: Vec<Point2> = (0..num)
+    let points: Vec<Vec2> = (0..num)
         .map(|_| {
-            Point2::new(
+            Vec2::new(
                 rng.gen_range(x_range.clone()),
                 rng.gen_range(y_range.clone())
             )
@@ -34,7 +34,7 @@ pub struct Position2D {
 impl Position2D {
     pub fn new(x: f32, y: f32, yaw: f32) -> Position2D {
         return Position2D {
-            iso : Isometry2::new(Point2::new(x, y), yaw)
+            iso : Isometry2::new(Vec2::new(x, y), yaw)
         };
     }
 
@@ -42,9 +42,9 @@ impl Position2D {
         return self.iso.translation.vector.norm()
     }
 
-    pub fn get_position(&self)->Point2
+    pub fn get_position(&self)->Vec2
     {
-        Point2::new(self.iso.translation.x, self.iso.translation.y)
+        Vec2::new(self.iso.translation.x, self.iso.translation.y)
     }
 
     pub fn get_theta(&self)->f32

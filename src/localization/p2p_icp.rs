@@ -1,10 +1,10 @@
-use crate::common::{Point2, Position2D};
+use crate::common::{Vec2, Position2D};
 use crate::algorithm::kd_tree::KdTree;
 use crate::log_err;
 
 pub fn icp(
-    source : Vec<Point2>,
-    target : Vec<Point2>,
+    source : Vec<Vec2>,
+    target : Vec<Vec2>,
     max_iterations : usize,
 )-> Position2D
 {
