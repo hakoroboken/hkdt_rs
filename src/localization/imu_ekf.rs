@@ -106,16 +106,16 @@ impl ImuEKF9 {
 
         let mag_x = mag_field.x;
         let mag_y = mag_field.y;
-        let mag_z = mag_field.z;
-        let sinx = x.sin();
-        let siny = y.sin();
-        let cosx = x.cos();
-        let cosy = y.cos();
+        // let mag_z = mag_field.z;
+        // let sinx = x.sin();
+        // let siny = y.sin();
+        // let cosx = x.cos();
+        // let cosy = y.cos();
 
-        let nu = mag_x*cosy + mag_y * siny * sinx + mag_z * siny * cosx;
-        let de = mag_y * cosx - mag_z * sinx;
+        // let nu = mag_x*cosy + mag_y * siny * sinx + mag_z * siny * cosx;
+        // let de = mag_y * cosx - mag_z * sinx;
 
-        let z = nu.atan2(de);
+        let z = mag_y.atan2(mag_x);
 
         self.observe_state = Vector3::new(x,y,z);
     }
