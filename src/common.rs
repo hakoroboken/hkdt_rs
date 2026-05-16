@@ -26,9 +26,24 @@ pub fn random_pointcloud2d(
     points
 }
 
+pub fn transform_pointcloud2d(
+    mut point_cloud : Vec<Vec2>,
+    transform : Position2D
+)->Vec<Vec2>
+{
+    for p in point_cloud.iter_mut()
+    {
+        let transformed = transform.iso.transform_point(&nalgebra::OPoint { coords: *p });
+        p.x = transformed.coords.x;
+        p.y = transformed.coords.y;
+    }
+
+    point_cloud
+}
+
 #[derive(Debug, Clone, Copy)]
 pub struct Position2D {
-    iso : nalgebra::Isometry2<f32>
+    pub iso : nalgebra::Isometry2<f32>
 }
 
 impl Position2D {
