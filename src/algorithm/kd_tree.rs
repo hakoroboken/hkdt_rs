@@ -14,7 +14,7 @@ pub struct KdTree {
     root: usize,
 }
 
-const NONE : usize = std::usize::MAX;
+const NONE: usize = std::usize::MAX;
 
 impl KdTree {
     pub fn new(mut points: Vec<Vec2>) -> Self {
@@ -77,14 +77,8 @@ impl KdTree {
         best
     }
 
-    fn nearest_rec(
-        &self,
-        node_index: usize,
-        target: &Vec2,
-        best: &mut Option<(Vec2, f32)>,
-    ) {
-        if node_index == NONE
-        {
+    fn nearest_rec(&self, node_index: usize, target: &Vec2, best: &mut Option<(Vec2, f32)>) {
+        if node_index == NONE {
             return;
         }
 

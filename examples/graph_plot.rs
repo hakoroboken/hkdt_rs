@@ -1,12 +1,11 @@
 //! 点群をsvg形式で生成する例
 
 use hkdt_rs::{
+    common::random_pointcloud2d,
     visualize::graph::{PlotColor, Plotter},
-    common::random_pointcloud2d
 };
 
-fn main()
-{
+fn main() {
     // -3.0 < x < 3.0
     // -3.0 < y < 3.0
     // 数は100個の点群を生成

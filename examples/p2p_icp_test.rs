@@ -6,13 +6,12 @@
 // だから点と点を対応させるIterativeClosestPointは回転に弱い
 
 use hkdt_rs::{
-    common::{Position2D,random_pointcloud2d, transform_pointcloud2d},
+    common::{Position2D, random_pointcloud2d, transform_pointcloud2d},
     localization::p2p_icp::icp, // 点と点対応なのでp2pという名前つけてる
-    log_info
+    log_info,
 };
 
-fn main()
-{
+fn main() {
     let point_cloud1 = random_pointcloud2d(400, -12.0..12.0, -12.0..12.0);
 
     // xに8[m]とyに6[m]進めて30度回転させる変換

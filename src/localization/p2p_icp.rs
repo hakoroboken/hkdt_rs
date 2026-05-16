@@ -1,49 +1,38 @@
 use nalgebra::{Isometry2, Translation2};
 
-use crate::common::{Vec2, Position2D};
 use crate::algorithm::kd_tree::KdTree;
+use crate::common::{Position2D, Vec2};
 use crate::log_err;
 
-pub fn icp(
-    source : Vec<Vec2>,
-    target : Vec<Vec2>,
-    max_iterations : usize,
-)-> Position2D
-{
+pub fn icp(source: Vec<Vec2>, target: Vec<Vec2>, max_iterations: usize) -> Position2D {
     let kdtree = KdTree::new(target.clone());
 
     let mut transform = Isometry2::identity();
 
-    for _ in 0..max_iterations
-    {
+    for _ in 0..max_iterations {
         let mut pairs = Vec::new();
-        for (_, src_p) in source.iter().enumerate()
-        {
-            let transformed_src = transform.transform_point(&nalgebra::Point2::new(src_p.x, src_p.y));
+        for (_, src_p) in source.iter().enumerate() {
+            let transformed_src =
+                transform.transform_point(&nalgebra::Point2::new(src_p.x, src_p.y));
             let transformed_src_p = Vec2::new(transformed_src.x, transformed_src.y);
-            match kdtree.nearest(&transformed_src_p)
-            {
-                Some((nearest, _dist))=>{
+            match kdtree.nearest(&transformed_src_p) {
+                Some((nearest, _dist)) => {
                     pairs.push((transformed_src_p, nearest));
                 }
-                None=>{
-
-                }
+                None => {}
             }
         }
 
         let pair_num = pairs.len();
-        if pair_num < 3
-        {
+        if pair_num < 3 {
             log_err!("[ICP]ペアの数が足りません。");
-            return Position2D::new(0.0, 0.0, 0.0)
+            return Position2D::new(0.0, 0.0, 0.0);
         }
 
         let mut source_centroid = Vec2::zeros();
         let mut target_centroid = Vec2::zeros();
 
-        for (_, (src, tar)) in pairs.iter().enumerate()
-        {
+        for (_, (src, tar)) in pairs.iter().enumerate() {
             source_centroid += src;
             target_centroid += tar;
         }
@@ -55,7 +44,6 @@ pub fn icp(
         let mut c = 0.0;
 
         for (_, (src, tar)) in pairs.iter().enumerate() {
-
             let centered_src = src - source_centroid;
             let centered_tar = tar - target_centroid;
 
@@ -78,15 +66,14 @@ pub fn icp(
         let dy = delta_trans.translation.y;
         let dtheta = delta_trans.rotation.angle();
 
-        if dx.abs() < 1e-6 && dy.abs() < 1e-6  && dtheta.abs() < 1e-6
-        {
-            break
+        if dx.abs() < 1e-6 && dy.abs() < 1e-6 && dtheta.abs() < 1e-6 {
+            break;
         }
-    }    
+    }
 
     Position2D::new(
-        transform.translation.x, 
-        transform.translation.y, 
-        transform.rotation.angle()
+        transform.translation.x,
+        transform.translation.y,
+        transform.rotation.angle(),
     )
 }

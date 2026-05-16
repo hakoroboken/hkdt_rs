@@ -1,7 +1,7 @@
 extern crate nalgebra;
-use nalgebra::{Matrix3, Matrix2, Matrix3x2};
+use nalgebra::{Matrix2, Matrix3, Matrix3x2};
 
-use crate::common::{Vec3, Vec2};
+use crate::common::{Vec2, Vec3};
 
 /// extended kalman filter for posture estimation from 9-axis imu
 pub struct ImuEKF9 {
@@ -37,17 +37,18 @@ impl ImuEKF9 {
         let predict_noise = Matrix3::<f32>::identity() * 0.01;
         let observe_noise = Matrix3::<f32>::identity() * 0.1;
 
-        let predict_distr = predict_jacob * self.cov_matrix * predict_jacob.transpose() + predict_noise;
+        let predict_distr =
+            predict_jacob * self.cov_matrix * predict_jacob.transpose() + predict_noise;
         let observe_distr = obs_jacob * predict_distr * obs_jacob.transpose() + observe_noise;
 
-        let kalman_gain = predict_distr * obs_jacob.transpose() * observe_distr.try_inverse().unwrap();
+        let kalman_gain =
+            predict_distr * obs_jacob.transpose() * observe_distr.try_inverse().unwrap();
 
         self.state = self.predict_state + kalman_gain * (self.observe_state - self.predict_state);
         self.cov_matrix = (obs_jacob - kalman_gain) * predict_distr;
     }
 
-    pub fn get_euler(&self)->Vec3
-    {
+    pub fn get_euler(&self) -> Vec3 {
         self.state
     }
 
@@ -87,24 +88,27 @@ impl ImuEKF9 {
         let cosx = self.state.x.cos();
         let cosy = self.state.y.cos();
         let tany = self.state.y.tan();
-        
+
         return Matrix3::new(
-            1.0+(omega_x+omega_y*tany*cosx - omega_z*tany*sinx)*dt, 
-            (omega_y*(sinx/(cosy*cosy)) + omega_z*(cosx/(cosy*cosy)))*dt,
+            1.0 + (omega_x + omega_y * tany * cosx - omega_z * tany * sinx) * dt,
+            (omega_y * (sinx / (cosy * cosy)) + omega_z * (cosx / (cosy * cosy))) * dt,
             0.0,
-            (-omega_y*sinx-omega_z*cosx)*dt, 
-            1.0, 
+            (-omega_y * sinx - omega_z * cosx) * dt,
+            1.0,
             0.0,
-            (omega_y*(cosx/cosy) - omega_z*(sinx/cosy))*dt, 
-            (omega_y*sinx*(siny/(cosy*cosy)) + omega_z*cosx*(siny/(cosy*cosy)))*dt, 
-            1.0);
+            (omega_y * (cosx / cosy) - omega_z * (sinx / cosy)) * dt,
+            (omega_y * sinx * (siny / (cosy * cosy)) + omega_z * cosx * (siny / (cosy * cosy)))
+                * dt,
+            1.0,
+        );
     }
 
     fn observe(&mut self, linear_accel: Vec3, mag_field: Vec3) {
-
         let x = (-linear_accel.y).atan2(-linear_accel.x);
 
-        let y = linear_accel.x.atan2((linear_accel.y*linear_accel.y+linear_accel.z*linear_accel.z).sqrt());
+        let y = linear_accel
+            .x
+            .atan2((linear_accel.y * linear_accel.y + linear_accel.z * linear_accel.z).sqrt());
 
         let mag_x = mag_field.x;
         let mag_y = mag_field.y;
@@ -114,13 +118,13 @@ impl ImuEKF9 {
         let cosx = x.cos();
         let cosy = y.cos();
 
-        let nu = mag_x*cosy + mag_y * siny * sinx + mag_z * siny * cosx;
+        let nu = mag_x * cosy + mag_y * siny * sinx + mag_z * siny * cosx;
         let de = mag_y * cosx - mag_z * sinx;
 
         // let z = mag_y.atan2(mag_x);
         let z = nu.atan2(de);
 
-        self.observe_state = Vec3::new(x,y,z);
+        self.observe_state = Vec3::new(x, y, z);
     }
 }
 
@@ -146,8 +150,8 @@ impl ImuEKF6 {
         &mut self,
         angular_velocity: Vec3,
         linear_accel: Vec3,
-        predict_noise : f32,
-        obs_noise : f32,
+        predict_noise: f32,
+        obs_noise: f32,
         dt: f32,
     ) {
         self.predict(angular_velocity, dt);
@@ -159,20 +163,22 @@ impl ImuEKF6 {
         let predict_noise = Matrix3::<f32>::identity() * predict_noise;
         let observe_noise = Matrix2::<f32>::identity() * obs_noise;
 
-        let predict_distr = predict_jacob * self.cov_matrix * predict_jacob.transpose() + predict_noise;
+        let predict_distr =
+            predict_jacob * self.cov_matrix * predict_jacob.transpose() + predict_noise;
         let observe_distr = obs_jacob.transpose() * predict_distr * obs_jacob + observe_noise;
 
         // ここのobs_jacobはobs_jacobが入るのではなく、ただ3x2単位行列がほしいだけ
         let kalman_gain = predict_distr * obs_jacob * observe_distr.try_inverse().unwrap();
 
         // ここのobs_jacobもそう
-        self.state = self.predict_state + kalman_gain * (self.observe_state - obs_jacob.transpose() * self.predict_state);
+        self.state = self.predict_state
+            + kalman_gain * (self.observe_state - obs_jacob.transpose() * self.predict_state);
         // ここもそう
-        self.cov_matrix = (Matrix3::<f32>::identity() - kalman_gain * obs_jacob.transpose()) * predict_distr;
+        self.cov_matrix =
+            (Matrix3::<f32>::identity() - kalman_gain * obs_jacob.transpose()) * predict_distr;
     }
 
-    pub fn get_euler(&self)->Vec3
-    {
+    pub fn get_euler(&self) -> Vec3 {
         self.state
     }
 
@@ -212,25 +218,28 @@ impl ImuEKF6 {
         let cosx = self.state.x.cos();
         let cosy = self.state.y.cos();
         let tany = self.state.y.tan();
-        
+
         return Matrix3::new(
-            1.0+(omega_x+omega_y*tany*cosx - omega_z*tany*sinx)*dt, 
-            (omega_y*(sinx/(cosy*cosy)) + omega_z*(cosx/(cosy*cosy)))*dt,
+            1.0 + (omega_x + omega_y * tany * cosx - omega_z * tany * sinx) * dt,
+            (omega_y * (sinx / (cosy * cosy)) + omega_z * (cosx / (cosy * cosy))) * dt,
             0.0,
-            (-omega_y*sinx-omega_z*cosx)*dt, 
-            1.0, 
+            (-omega_y * sinx - omega_z * cosx) * dt,
+            1.0,
             0.0,
-            (omega_y*(cosx/cosy) - omega_z*(sinx/cosy))*dt, 
-            (omega_y*sinx*(siny/(cosy*cosy)) + omega_z*cosx*(siny/(cosy*cosy)))*dt, 
-            1.0);
+            (omega_y * (cosx / cosy) - omega_z * (sinx / cosy)) * dt,
+            (omega_y * sinx * (siny / (cosy * cosy)) + omega_z * cosx * (siny / (cosy * cosy)))
+                * dt,
+            1.0,
+        );
     }
 
     fn observe(&mut self, linear_accel: Vec3) {
-
         let x = (-linear_accel.y).atan2(-linear_accel.x);
 
-        let y = linear_accel.x.atan2((linear_accel.y*linear_accel.y+linear_accel.z*linear_accel.z).sqrt());
+        let y = linear_accel
+            .x
+            .atan2((linear_accel.y * linear_accel.y + linear_accel.z * linear_accel.z).sqrt());
 
-        self.observe_state = Vec2::new(x,y);
+        self.observe_state = Vec2::new(x, y);
     }
 }
