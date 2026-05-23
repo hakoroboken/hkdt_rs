@@ -14,16 +14,18 @@ pub fn icp(source: Vec<Vec2>, target: Vec<Vec2>, max_iterations: usize) -> Posit
 
         let mut source_centroid = Vec2::zeros();
         let mut target_centroid = Vec2::zeros();
+        let mut distance_average = 0.0;
 
         for (_, src_p) in source.iter().enumerate() {
             let transformed_src =
                 transform.transform_point(&nalgebra::Point2::new(src_p.x, src_p.y));
             let transformed_src_p = Vec2::new(transformed_src.x, transformed_src.y);
             match kdtree.nearest(&transformed_src_p) {
-                Some((nearest, _dist)) => {
+                Some((nearest, dist)) => {
                     pairs.push((transformed_src_p, nearest));
                     source_centroid += transformed_src_p;
                     target_centroid += nearest;
+                    distance_average += dist;
                 }
                 None => {}
             }
@@ -37,6 +39,7 @@ pub fn icp(source: Vec<Vec2>, target: Vec<Vec2>, max_iterations: usize) -> Posit
 
         source_centroid /= pair_num as f32;
         target_centroid /= pair_num as f32;
+        distance_average /= pair_num as f32;
 
         let mut s = 0.0;
         let mut c = 0.0;
@@ -64,7 +67,7 @@ pub fn icp(source: Vec<Vec2>, target: Vec<Vec2>, max_iterations: usize) -> Posit
         let dy = delta_trans.translation.y;
         let dtheta = delta_trans.rotation.angle();
 
-        if dx.abs() < 1e-6 && dy.abs() < 1e-6 && dtheta.abs() < 1e-6 {
+        if dx.abs() < 1e-6 && dy.abs() < 1e-6 && dtheta.abs() < 1e-6 && distance_average.abs() < 1e-6 {
             break;
         }
     }
