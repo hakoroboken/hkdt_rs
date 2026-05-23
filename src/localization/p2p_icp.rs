@@ -11,6 +11,10 @@ pub fn icp(source: Vec<Vec2>, target: Vec<Vec2>, max_iterations: usize) -> Posit
 
     for _ in 0..max_iterations {
         let mut pairs = Vec::new();
+
+        let mut source_centroid = Vec2::zeros();
+        let mut target_centroid = Vec2::zeros();
+
         for (_, src_p) in source.iter().enumerate() {
             let transformed_src =
                 transform.transform_point(&nalgebra::Point2::new(src_p.x, src_p.y));
@@ -18,6 +22,8 @@ pub fn icp(source: Vec<Vec2>, target: Vec<Vec2>, max_iterations: usize) -> Posit
             match kdtree.nearest(&transformed_src_p) {
                 Some((nearest, _dist)) => {
                     pairs.push((transformed_src_p, nearest));
+                    source_centroid += transformed_src_p;
+                    target_centroid += nearest;
                 }
                 None => {}
             }
@@ -27,14 +33,6 @@ pub fn icp(source: Vec<Vec2>, target: Vec<Vec2>, max_iterations: usize) -> Posit
         if pair_num < 3 {
             log_err!("[ICP]ペアの数が足りません。");
             return Position2D::new(0.0, 0.0, 0.0);
-        }
-
-        let mut source_centroid = Vec2::zeros();
-        let mut target_centroid = Vec2::zeros();
-
-        for (_, (src, tar)) in pairs.iter().enumerate() {
-            source_centroid += src;
-            target_centroid += tar;
         }
 
         source_centroid /= pair_num as f32;

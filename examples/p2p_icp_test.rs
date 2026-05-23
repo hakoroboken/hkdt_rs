@@ -14,8 +14,8 @@ use hkdt_rs::{
 fn main() {
     let point_cloud1 = random_pointcloud2d(400, -12.0..12.0, -12.0..12.0);
 
-    // xに8[m]とyに6[m]進めて30度回転させる変換
-    let trans = Position2D::new(8.0, 6.0, 30.0_f32.to_radians());
+    // xに2[m]とyに2[m]進めて30度回転させる変換
+    let trans = Position2D::new(2.0, 2.0, 30.0_f32.to_radians());
 
     // point_cloud1をtransにより移動させた点群を容易
     let point_cloud2 = transform_pointcloud2d(point_cloud1.clone(), trans);
