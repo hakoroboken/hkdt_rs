@@ -67,7 +67,11 @@ pub fn icp(source: Vec<Vec2>, target: Vec<Vec2>, max_iterations: usize) -> Posit
         let dy = delta_trans.translation.y;
         let dtheta = delta_trans.rotation.angle();
 
-        if dx.abs() < 1e-6 && dy.abs() < 1e-6 && dtheta.abs() < 1e-6 && distance_average.abs() < 1e-6 {
+        if dx.abs() < 1e-6
+            && dy.abs() < 1e-6
+            && dtheta.abs() < 1e-6
+            && distance_average.abs() < 1e-6
+        {
             break;
         }
     }

@@ -1,6 +1,6 @@
+use hkdt_rs::impl_jsonable;
+use hkdt_rs::json::{Deserialize, Serialize, Jsonable};
 use hkdt_rs::log_info;
-use hkdt_rs::{impl_jsonable, json::Jsonable};
-use serde::{Deserialize, Serialize}; // このために「serde = {version = "1.0.148", features = ["derive"]}」をCargo.tomlへ書く必要あり
 
 // 好きな構造体で以下のように宣言することで構造体を直接Stringへ変換することが可能
 #[derive(Debug, Clone, Serialize, Deserialize)]
